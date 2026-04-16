@@ -1,0 +1,34 @@
+name: notch
+options:
+  bundleIdPrefix: com.sovrin
+  deploymentTarget:
+    macOS: "26.0"
+  xcodeVersion: "15.0"
+
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    MACOSX_DEPLOYMENT_TARGET: "26.0"
+    CODE_SIGN_IDENTITY: "-"
+    CODE_SIGN_STYLE: Manual
+    PRODUCT_NAME: notch
+
+targets:
+  notch:
+    type: application
+    platform: macOS
+    sources:
+      - path: .
+        excludes:
+          - "*.xcodeproj"
+          - "*.xcworkspace"
+          - project.yml
+          - "*.yml"
+          - "NotchClipboard"
+    resources:
+      - path: Assets.xcassets
+    settings:
+      base:
+        INFOPLIST_FILE: Info.plist
+        PRODUCT_BUNDLE_IDENTIFIER: com.sovrin.notch
+        LD_RUNPATH_SEARCH_PATHS: "$(inherited) @executable_path/../Frameworks"
