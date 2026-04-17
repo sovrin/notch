@@ -1,25 +1,30 @@
 import AppKit
 import SwiftUI
 
+enum DragPayload {
+    case file(URL)
+    case text(String)
+}
+
 /// Invisible overlay that initiates an AppKit drag session and reports
 /// the outcome via `onDragSucceeded`. Uses `hitTest → nil` so SwiftUI's
 /// own hover/click handling is fully unaffected.
 struct AppKitDragHandler: NSViewRepresentable {
-    let url: URL
+    let payload: DragPayload
     let onDragSucceeded: () -> Void
 
     func makeNSView(context: Context) -> DragHandlerView {
-        DragHandlerView(url: url, onDragSucceeded: onDragSucceeded)
+        DragHandlerView(payload: payload, onDragSucceeded: onDragSucceeded)
     }
 
     func updateNSView(_ nsView: DragHandlerView, context: Context) {
-        nsView.url = url
+        nsView.payload = payload
         nsView.onDragSucceeded = onDragSucceeded
     }
 }
 
 final class DragHandlerView: NSView, NSDraggingSource {
-    var url: URL
+    var payload: DragPayload
     var onDragSucceeded: () -> Void
 
     private var eventMonitor: Any?
@@ -27,9 +32,10 @@ final class DragHandlerView: NSView, NSDraggingSource {
     private var isDragging = false
 
     private static let dragThreshold: CGFloat = 3
+    private static let dragIconSize = CGSize(width: 32, height: 32)
 
-    init(url: URL, onDragSucceeded: @escaping () -> Void) {
-        self.url = url
+    init(payload: DragPayload, onDragSucceeded: @escaping () -> Void) {
+        self.payload = payload
         self.onDragSucceeded = onDragSucceeded
         super.init(frame: .zero)
     }
@@ -37,7 +43,6 @@ final class DragHandlerView: NSView, NSDraggingSource {
     @available(*, unavailable)
     required init?(coder: NSCoder) { fatalError() }
 
-    // Pass all hit-testing through to SwiftUI content below.
     override func hitTest(_ point: NSPoint) -> NSView? { nil }
 
     override func viewDidMoveToWindow() {
@@ -86,8 +91,7 @@ final class DragHandlerView: NSView, NSDraggingSource {
     }
 
     private func startDrag(with event: NSEvent) {
-        let icon = NSWorkspace.shared.icon(forFile: url.path)
-        let size = CGSize(width: 32, height: 32)
+        let size = Self.dragIconSize
         let loc = convert(event.locationInWindow, from: nil)
         let frame = CGRect(
             x: loc.x - size.width / 2,
@@ -95,7 +99,18 @@ final class DragHandlerView: NSView, NSDraggingSource {
             width: size.width,
             height: size.height
         )
-        let item = NSDraggingItem(pasteboardWriter: url as NSURL)
+
+        let item: NSDraggingItem
+        let icon: NSImage
+        switch payload {
+        case .file(let url):
+            item = NSDraggingItem(pasteboardWriter: url as NSURL)
+            icon = NSWorkspace.shared.icon(forFile: url.path)
+        case .text(let text):
+            item = NSDraggingItem(pasteboardWriter: text as NSString)
+            icon = NSImage(systemSymbolName: "text.quote", accessibilityDescription: nil)
+                ?? NSImage(size: NSSize(width: size.width, height: size.height))
+        }
         item.setDraggingFrame(frame, contents: icon)
         beginDraggingSession(with: [item], event: event, source: self)
     }
@@ -106,7 +121,10 @@ final class DragHandlerView: NSView, NSDraggingSource {
         _ session: NSDraggingSession,
         sourceOperationMaskFor context: NSDraggingContext
     ) -> NSDragOperation {
-        [.copy, .move, .link]
+        switch payload {
+        case .file: return [.copy, .move, .link]
+        case .text: return [.copy, .move]
+        }
     }
 
     func draggingSession(

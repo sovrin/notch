@@ -8,7 +8,6 @@ struct ClipboardPanel: View {
     var body: some View {
         GlassEffectContainer {
             DropZoneView(
-                isEmpty: items.isEmpty,
                 items: items,
                 isTargeted: dragState.isDraggingOver,
                 onDelete: { item in
