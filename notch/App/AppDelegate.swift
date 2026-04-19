@@ -33,8 +33,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         dragPanel.onDragExited   = { [weak self] in self?.dragState.isDraggingOver = false }
         dragPanel.onFilesDropped = { [weak self] urls in self?.dragState.pendingDrops.append(contentsOf: urls) }
         dragPanel.onTextDropped  = { [weak self] text in self?.dragState.pendingSnippets.append(text) }
-        dragState.onHeightChanged = { [weak self] newHeight in
-            self?.resizePanel(contentHeight: newHeight)
+        dragState.onHeightChanged = { [weak self] _ in
+            self?.resizePanel()
+        }
+        dragState.onWidthChanged = { [weak self] width, panelX in
+            self?.resizePanelWidth(width, panelX: panelX)
         }
         panel = dragPanel
 
@@ -56,23 +59,28 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func positionPanelBelowNotch() {
         guard let panel = panel, let screen = NSScreen.main else { return }
-
-        let panelX = screen.frame.midX - 160
-        let panelY = screen.frame.maxY - 140
-
+        let panelX = screen.frame.midX - dragState.contentWidth / 2
+        let panelY = screen.frame.maxY - dragState.contentHeight - 20
         panel.setFrameOrigin(NSPoint(x: panelX, y: panelY))
     }
 
-    // Keep panel top edge fixed; grow downward as contentHeight increases.
-    // Panel height = contentHeight + 16 (padding) + 14 (latch) = contentHeight + 30
-    // Panel top = screen.frame.maxY + 10 (constant)
-    // Panel originY = top - newHeight = screen.frame.maxY - 20 - contentHeight
-    private func resizePanel(contentHeight: CGFloat) {
+    // Top edge stays fixed; panel grows down. Re-centers on height change.
+    private func resizePanel() {
         guard let panel = panel, let screen = NSScreen.main else { return }
-        let newHeight = contentHeight + 30
-        let panelX = screen.frame.midX - 160
-        let panelY = screen.frame.maxY - 20 - contentHeight
-        panel.setFrame(NSRect(x: panelX, y: panelY, width: 320, height: newHeight), display: true, animate: false)
+        let w = dragState.contentWidth
+        let h = dragState.contentHeight
+        let panelX = screen.frame.midX - w / 2
+        let panelY = screen.frame.maxY - h - 20
+        panel.setFrame(NSRect(x: panelX, y: panelY, width: w, height: h + 30), display: true, animate: false)
+    }
+
+    // Width resize: caller provides explicit panelX so we don't re-center mid-drag.
+    private func resizePanelWidth(_ width: CGFloat, panelX: CGFloat) {
+        guard let panel = panel, let screen = NSScreen.main else { return }
+        let h = dragState.contentHeight
+        let panelY = screen.frame.maxY - h - 20
+        dragState.contentWidth = width
+        panel.setFrame(NSRect(x: panelX, y: panelY, width: width, height: h + 30), display: true, animate: false)
     }
 
     private func setupGlobalDragMonitor() {
