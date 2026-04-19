@@ -11,6 +11,7 @@
 		95B0DD2D2F9015B40028003A /* notch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = notch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		95B0DD602F9018220028003A /* notch.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = notch.xcodeproj; sourceTree = "<group>"; };
 		95BA47902F92A10900C8631E /* notch.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = notch.xcodeproj; sourceTree = "<group>"; };
+		95BA47D42F956C1100C8631E /* notch.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = notch.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -63,6 +64,13 @@
 			sourceTree = "<group>";
 		};
 		95BA47922F92A10900C8631E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		95BA47D62F956C1100C8631E /* Products */ = {
 			isa = PBXGroup;
 			children = (
 			);
@@ -125,6 +133,10 @@
 				{
 					ProductGroup = 959EFCFD2F90CC5C003BB0FC /* Products */;
 					ProjectRef = 959EFCFB2F90CC5C003BB0FC /* notch.xcodeproj */;
+				},
+				{
+					ProductGroup = 95BA47D62F956C1100C8631E /* Products */;
+					ProjectRef = 95BA47D42F956C1100C8631E /* notch.xcodeproj */;
 				},
 				{
 					ProductGroup = 95B0DD612F9018220028003A /* Products */;

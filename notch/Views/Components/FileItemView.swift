@@ -9,17 +9,24 @@ struct FileItemView: View {
             onDelete: onDelete,
             dragOverlay: AnyView(AppKitDragHandler(payload: .file(file.url), onDragSucceeded: onDelete))
         ) {
-            FileIconView(url: file.url)
-            VStack(alignment: .leading, spacing: 1) {
+            if file.isImage {
+                ImageThumbnailView(url: file.url)
+            } else {
+                FileIconView(url: file.url)
+            }
+            VStack(alignment: .leading, spacing: 2) {
                 Text(file.name)
                     .font(.system(size: 12, weight: .medium))
                     .lineLimit(1)
                     .truncationMode(.middle)
-                if let count = file.childrenCount {
-                    Text("\(count) item\(count == 1 ? "" : "s")")
+                Text(file.primarySubtitle)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                if let date = file.modificationDate {
+                    Text(date.relativeFormatted)
                         .font(.caption2)
-                } else if let size = file.formattedSize {
-                    Text(size).font(.caption2)
+                        .foregroundStyle(.tertiary)
                 }
             }
         }
