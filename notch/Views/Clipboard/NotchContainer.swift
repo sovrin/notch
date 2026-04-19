@@ -10,9 +10,32 @@ struct NotchContainer: View {
 
     private let minHeight: CGFloat = 80
     private let maxHeight: CGFloat = 400
+    private let peekAmount: CGFloat = 20
 
-    private var isExpanded: Bool {
-        isHovering || dragState.isDraggingOver || isDraggingLatch
+    private enum ExpandState: Equatable {
+        case collapsed, peeking, expanded
+    }
+
+    private var expandState: ExpandState {
+        if isHovering || dragState.isDraggingOver || isDraggingLatch { return .expanded }
+        if dragState.isGlobalDragging { return .peeking }
+        return .collapsed
+    }
+
+    private var revealOffset: CGFloat {
+        switch expandState {
+        case .expanded:  return 0
+        case .peeking:   return -(dragState.contentHeight - peekAmount)
+        case .collapsed: return -dragState.contentHeight
+        }
+    }
+
+    private var contentOpacity: Double {
+        switch expandState {
+        case .expanded:  return 1
+        case .peeking:   return 0.7
+        case .collapsed: return 0
+        }
     }
 
     private func handleHover(_ inside: Bool) {
@@ -31,13 +54,13 @@ struct NotchContainer: View {
     var body: some View {
         VStack(spacing: 0) {
             ClipboardPanel(dragState: dragState)
-                .opacity(isExpanded ? 1 : 0)
+                .opacity(contentOpacity)
                 .onHover { inside in
                     handleHover(inside)
                 }
 
             LatchView(
-                isExpanded: isExpanded,
+                isExpanded: expandState != .collapsed,
                 onDragChanged: { delta in
                     if !isDraggingLatch {
                         isDraggingLatch = true
@@ -60,8 +83,8 @@ struct NotchContainer: View {
                 handleHover(inside)
             }
         }
-        .offset(y: isExpanded ? 0 : -dragState.contentHeight)
         .animation(.spring(response: 0.38, dampingFraction: 0.78), value: isExpanded)
+        .offset(y: revealOffset)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
 }

@@ -4,10 +4,12 @@ import SwiftUI
 class AppDelegate: NSObject, NSApplicationDelegate {
     private var panel: DragAwarePanel?
     private let dragState = PanelDragState()
+    private var dragMonitors: [Any] = []
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         setupPanel()
         setupMenu()
+        setupGlobalDragMonitor()
     }
 
     private func setupPanel() {
@@ -71,6 +73,29 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let panelX = screen.frame.midX - 160
         let panelY = screen.frame.maxY - 20 - contentHeight
         panel.setFrame(NSRect(x: panelX, y: panelY, width: 320, height: newHeight), display: true, animate: false)
+    }
+
+    private func setupGlobalDragMonitor() {
+        let dragPboard = NSPasteboard(name: .drag)
+        var lastChangeCount = dragPboard.changeCount
+
+        let dragged = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDragged]) { [weak self] _ in
+            guard let self else { return }
+            let current = NSPasteboard(name: .drag).changeCount
+            // changeCount advances when a new drag session starts
+            let isRealDrag = current != lastChangeCount || NSPasteboard(name: .drag).types != nil
+            if isRealDrag && !self.dragState.isGlobalDragging {
+                self.dragState.isGlobalDragging = true
+            }
+        }
+
+        let mouseUp = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseUp]) { [weak self] _ in
+            lastChangeCount = NSPasteboard(name: .drag).changeCount
+            self?.dragState.isGlobalDragging = false
+        }
+
+        if let d = dragged { dragMonitors.append(d) }
+        if let u = mouseUp { dragMonitors.append(u) }
     }
 
     private func setupMenu() {
