@@ -83,8 +83,8 @@ struct NotchContainer: View {
                 handleHover(inside)
             }
         }
-        .animation(.spring(response: 0.38, dampingFraction: 0.78), value: isExpanded)
         .offset(y: revealOffset)
+        .animation(.easeInOut(duration: 0.3), value: expandState)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
 }

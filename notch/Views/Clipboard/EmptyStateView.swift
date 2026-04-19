@@ -9,7 +9,7 @@ struct EmptyStateView: View {
                 .font(.system(size: 24, weight: .medium))
                 .foregroundStyle(isTargeted ? .primary : .secondary)
                 .scaleEffect(isTargeted ? 1.15 : 1.0)
-                .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isTargeted)
+                .animation(.easeInOut(duration: 0.25), value: isTargeted)
 
             Text("Drop files here")
                 .font(.subheadline)

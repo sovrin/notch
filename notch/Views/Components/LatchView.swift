@@ -15,7 +15,7 @@ struct LatchView: View {
             .frame(width: isExpanded ? 48 : 36, height: 4)
             .shadow(color: .white.opacity(isExpanded ? 0.25 : 0), radius: 4, y: 1)
             .padding(.vertical, 5)
-            .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isExpanded)
+            .animation(.easeInOut(duration: 0.25), value: isExpanded)
             .gesture(
                 DragGesture(minimumDistance: 2, coordinateSpace: .global)
                     .onChanged { value in
