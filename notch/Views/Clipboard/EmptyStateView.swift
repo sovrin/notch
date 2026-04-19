@@ -4,22 +4,29 @@ struct EmptyStateView: View {
     let isTargeted: Bool
 
     var body: some View {
-        VStack(spacing: 6) {
-            Image(systemName: isTargeted ? "tray.and.arrow.down.fill" : "tray")
-                .font(.system(size: 24, weight: .medium))
-                .foregroundStyle(isTargeted ? .primary : .secondary)
-                .scaleEffect(isTargeted ? 1.15 : 1.0)
+        VStack(spacing: 5) {
+            Image(systemName: isTargeted ? "arrow.down.to.line.circle.fill" : "arrow.down.to.line.circle")
+                .font(.system(size: 22, weight: .light))
+                .foregroundStyle(isTargeted ? Color.accentColor : Color.secondary)
                 .animation(.easeInOut(duration: 0.25), value: isTargeted)
 
-            Text("Drop files here")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+            Text(isTargeted ? "Release to drop" : "Drop files or text")
+                .font(.footnote)
+                .foregroundStyle(.tertiary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background {
+            if isTargeted {
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color.accentColor.opacity(0.06))
+                    .padding(4)
+                    .transition(.opacity)
+            }
+        }
         .overlay {
             if isTargeted {
                 RoundedRectangle(cornerRadius: 12)
-                    .stroke(Color.accentColor.opacity(0.6), lineWidth: 1.5)
+                    .strokeBorder(Color.accentColor.opacity(0.4), lineWidth: 1)
                     .padding(4)
                     .transition(.opacity)
             }

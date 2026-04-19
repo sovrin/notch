@@ -19,16 +19,14 @@ struct FileItemView: View {
                     .font(.system(size: 12, weight: .medium))
                     .lineLimit(1)
                     .truncationMode(.middle)
-                Text(file.primarySubtitle)
+                Text(file.subtitle)
                     .font(.caption2)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
-                if let date = file.modificationDate {
-                    Text(date.relativeFormatted)
-                        .font(.caption2)
-                        .foregroundStyle(.tertiary)
-                }
             }
+        }
+        .onTapGesture(count: 2) {
+            NSWorkspace.shared.open(file.url)
         }
     }
 }

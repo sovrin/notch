@@ -40,17 +40,19 @@ struct ClipboardFile: Identifiable {
         return CGSize(width: w, height: h)
     }
 
-    var primarySubtitle: String {
-        if let count = childrenCount {
-            return "\(count) item\(count == 1 ? "" : "s")"
-        }
+    var subtitle: String {
         var parts: [String] = []
-        if let dims = imageDimensions {
-            parts.append("\(Int(dims.width)) × \(Int(dims.height))")
-        } else if let kind = fileKind {
-            parts.append(kind)
+        if let count = childrenCount {
+            parts.append("\(count) item\(count == 1 ? "" : "s")")
+        } else {
+            if let dims = imageDimensions {
+                parts.append("\(Int(dims.width)) × \(Int(dims.height))")
+            } else if let kind = fileKind {
+                parts.append(kind)
+            }
+            if let size = formattedSize { parts.append(size) }
         }
-        if let size = formattedSize { parts.append(size) }
+        if let date = modificationDate { parts.append(date.relativeFormatted) }
         return parts.joined(separator: " · ")
     }
 }

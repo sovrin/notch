@@ -8,7 +8,7 @@ struct FileIconView: View {
         Image(nsImage: NSWorkspace.shared.icon(forFile: url.path))
             .resizable()
             .aspectRatio(contentMode: .fit)
-            .frame(width: 28, height: 28)
+            .frame(width: 32, height: 32)
     }
 }
 

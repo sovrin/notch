@@ -7,6 +7,8 @@ struct DeleteButtonView: View {
         Button(action: action) {
             Image(systemName: "xmark.circle.fill")
                 .font(.system(size: 14))
+                .symbolRenderingMode(.hierarchical)
+                .foregroundStyle(.secondary)
         }
         .buttonStyle(.plain)
     }

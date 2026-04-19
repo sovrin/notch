@@ -16,11 +16,11 @@ struct ClipboardItemRow<Content: View>: View {
                     .transition(.opacity.combined(with: .scale(scale: 0.8)))
             }
         }
-        .padding(.horizontal, 10)
+        .padding(.horizontal, 8)
         .padding(.vertical, 5)
         .background(
-            RoundedRectangle(cornerRadius: 8)
-                .fill(isHovering ? Color.primary.opacity(0.07) : Color.clear)
+            RoundedRectangle(cornerRadius: 7)
+                .fill(isHovering ? Color.primary.opacity(0.08) : Color.clear)
         )
         .contentShape(Rectangle())
         .onHover { hovering in

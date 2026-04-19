@@ -7,18 +7,25 @@ struct ItemsListView: View {
 
     var body: some View {
         ScrollView {
-            LazyVStack(spacing: 2) {
-                ForEach(items) { item in
-                    switch item {
-                    case .file(let file):
-                        FileItemView(file: file) { onDelete(item) }
-                    case .snippet(let snippet):
-                        SnippetItemView(snippet: snippet) { onDelete(item) }
+            LazyVStack(spacing: 0) {
+                ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
+                    Group {
+                        switch item {
+                        case .file(let file):
+                            FileItemView(file: file) { onDelete(item) }
+                        case .snippet(let snippet):
+                            SnippetItemView(snippet: snippet) { onDelete(item) }
+                        }
+                    }
+                    if index < items.count - 1 {
+                        Divider()
+                            .padding(.leading, 50)
+                            .opacity(0.5)
                     }
                 }
             }
             .padding(.vertical, 4)
-            .padding(.horizontal, 4)
+            .padding(.horizontal, 2)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .overlay {

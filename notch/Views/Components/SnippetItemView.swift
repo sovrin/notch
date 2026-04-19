@@ -9,14 +9,19 @@ struct SnippetItemView: View {
             onDelete: onDelete,
             dragOverlay: AnyView(AppKitDragHandler(payload: .text(snippet.text), onDragSucceeded: onDelete))
         ) {
-            Image(systemName: "text.document")
-                .font(.system(size: 18))
-                .foregroundStyle(.secondary)
+            RoundedRectangle(cornerRadius: 7)
+                .fill(Color.primary.opacity(0.08))
                 .frame(width: 32, height: 32)
+                .overlay {
+                    Image(systemName: "text.alignleft")
+                        .font(.system(size: 13, weight: .regular))
+                        .foregroundStyle(.secondary)
+                }
             Text(snippet.text)
-                .font(.system(size: 12, weight: .medium))
+                .font(.system(size: 12))
                 .lineLimit(2)
                 .truncationMode(.tail)
+                .foregroundStyle(.primary)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
